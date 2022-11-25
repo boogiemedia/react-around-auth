@@ -34,18 +34,20 @@ function App() {
   //.........end of states.......................................................................
 
   function jwtCheck() {
-    checkToken(localStorage.jwt).then((res) => {
-      if (localStorage.jwt) {
-        if (res.data.email) {
-          console.log(res);
-          setLoggedIn(true);
-          console.log('true token', res.data);
-          setUser(res.data.email);
-        } else {
-          setLoggedIn(false);
+    checkToken(localStorage.jwt)
+      .then((res) => {
+        if (localStorage.jwt) {
+          if (res.data.email) {
+            setLoggedIn(true);
+            setUser(res.data.email);
+          } else {
+            setLoggedIn(false);
+          }
         }
-      }
-    });
+      })
+      .catch((res) => {
+        console.log('something went wrong with token', res);
+      });
   }
 
   //................end of token check..........................
@@ -69,13 +71,16 @@ function App() {
 
   useEffect(() => {
     getApiData();
+    jwtCheck();
   }, []);
-  jwtCheck();
+
   //.................end of userinfo call......................................................
-  function registration(email, password) {
+
+  function signup(email, password) {
     register(email, password)
       .then((res) => {
         if (!res.data._id) {
+          console.log(res);
           setInfoToolTipIcon('error');
           setInfoToolTipText('Ooops,something went wrong! please try again.');
           setInfoToolTipOPen(true);
@@ -95,8 +100,8 @@ function App() {
   function login(email, password) {
     authorize(email, password)
       .then((data) => {
+        localStorage.setItem('jwt', data.token);
         if (data.token) {
-          console.log('succed');
           setLoggedIn(true);
         }
       })
@@ -107,7 +112,7 @@ function App() {
         setInfoToolTipOPen(true);
       });
   }
-  function signOut() {}
+
   //.................end of authentication.........................................................
 
   function handleCloseButtonClick() {
@@ -217,7 +222,7 @@ function App() {
             />
             <Route
               path='/signup'
-              element={<Signup onAutharization={registration} />}
+              element={<Signup onAutharization={signup} ok={infoToolTipIcon} />}
             />
 
             <Route element={<ProtectedRoute onLogin={isLoggedIn} />}>

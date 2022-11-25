@@ -22,6 +22,7 @@ export default function Header(props) {
     }
 
     window.addEventListener('resize', sizeMetter);
+    return () => window.removeEventListener('resize', sizeMetter);
   }, []);
 
   return (
