@@ -6,7 +6,7 @@ import Login from './Login';
 import Footer from './Footer';
 import ImagePopup from './ImagePopup';
 import api from '../utils/api';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Route, Routes, useNavigate } from 'react-router-dom';
 import { CurrentUserContext } from '../contexts/CurrentUserContext';
 import EditProfilePopup from './EditProfilePopup';
 import EditAvatarPopup from './EditAvatarPopup';
@@ -30,6 +30,7 @@ function App() {
   const [infoToolTipText, setInfoToolTipText] = useState('');
   const [isLoggedIn, setLoggedIn] = useState(false);
   const [user, setUser] = useState('');
+  const navigate = useNavigate();
 
   //.........end of states.......................................................................
 
@@ -88,6 +89,7 @@ function App() {
           setInfoToolTipIcon('succes');
           setInfoToolTipText('Succees! You have now been registred.');
           setInfoToolTipOPen(true);
+          navigate('/login');
         }
       })
       .catch((res) => {
@@ -191,90 +193,88 @@ function App() {
   //................................End of Api calls..........................................
 
   return (
-    <Router>
-      <div className='App'>
-        <CurrentUserContext.Provider value={currentUser}>
-          <Routes>
-            <Route
-              path='login'
-              element={<Header goTo='sign up' link='/signup' />}
-            />
-            <Route
-              path='signup'
-              element={<Header goTo='log in' link='/login' />}
-            />
+    <div className='App'>
+      <CurrentUserContext.Provider value={currentUser}>
+        <Routes>
+          <Route
+            path='login'
+            element={<Header goTo='sign up' link='/signup' />}
+          />
+          <Route
+            path='signup'
+            element={<Header goTo='log in' link='/login' />}
+          />
+          <Route
+            path='/'
+            element={<Header goTo='Log out' link='/login' email={user} />}
+          />
+        </Routes>
+        <Routes>
+          <Route
+            path='/login'
+            element={
+              <Login
+                title='Log in'
+                link='Sign up'
+                onAutharization={login}
+                onLogin={isLoggedIn}
+              />
+            }
+          />
+          <Route
+            path='/signup'
+            element={<Signup onAutharization={signup} ok={infoToolTipIcon} />}
+          />
+
+          <Route element={<ProtectedRoute onLogin={isLoggedIn} />}>
             <Route
               path='/'
-              element={<Header goTo='Log out' link='/login' email={user} />}
-            />
-          </Routes>
-          <Routes>
-            <Route
-              path='/login'
               element={
-                <Login
-                  title='Log in'
-                  link='Sign up'
-                  onAutharization={login}
-                  onLogin={isLoggedIn}
+                <Main
+                  setActiveCard={setActiveCard}
+                  setAvatarIsOpen={setAvatarIsOpen}
+                  setProfileOpen={setProfileOpen}
+                  setCardOpen={setCardOpen}
+                  setImagePopup={setImagePopup}
+                  cards={cards}
+                  onCardLike={handleCardLike}
+                  onCardDelete={handleCardDelete}
                 />
               }
             />
-            <Route
-              path='/signup'
-              element={<Signup onAutharization={signup} ok={infoToolTipIcon} />}
-            />
+          </Route>
+        </Routes>
 
-            <Route element={<ProtectedRoute onLogin={isLoggedIn} />}>
-              <Route
-                path='/'
-                element={
-                  <Main
-                    setActiveCard={setActiveCard}
-                    setAvatarIsOpen={setAvatarIsOpen}
-                    setProfileOpen={setProfileOpen}
-                    setCardOpen={setCardOpen}
-                    setImagePopup={setImagePopup}
-                    cards={cards}
-                    onCardLike={handleCardLike}
-                    onCardDelete={handleCardDelete}
-                  />
-                }
-              />
-            </Route>
-          </Routes>
-
-          <Footer />
-          <EditAvatarPopup
-            isOpen={isAvatarOpen}
-            onClose={handleCloseButtonClick}
-            onUpdateAvatar={handleUpdateAvatar}
-          />
-          <EditProfilePopup
-            isOpen={isProfileOpen}
-            onClose={handleCloseButtonClick}
-            onUpdateUser={handleUpdateUser}
-          />
-          <EditPlacePopup
-            onAddPlace={handleAddPlaceSubmit}
-            isOpen={isCardOpen}
-            onClose={handleCloseButtonClick}
-            onUpdateUser={handleAddPlaceSubmit}
-          />
-          <ImagePopup
-            onOpen={isImagePopupOpen}
-            onClose={handleCloseButtonClick}
-            item={activeCard}
-          />
-          <InfoToolTip
-            onClose={handleCloseButtonClick}
-            isOpen={isInfoToolTipOpen}
-            icon={infoToolTipIcon}
-            text={infoToolTipText}
-          />
-        </CurrentUserContext.Provider>
-      </div>
-    </Router>
+        <Footer />
+        <EditAvatarPopup
+          isOpen={isAvatarOpen}
+          onClose={handleCloseButtonClick}
+          onUpdateAvatar={handleUpdateAvatar}
+        />
+        <EditProfilePopup
+          isOpen={isProfileOpen}
+          onClose={handleCloseButtonClick}
+          onUpdateUser={handleUpdateUser}
+        />
+        <EditPlacePopup
+          onAddPlace={handleAddPlaceSubmit}
+          isOpen={isCardOpen}
+          onClose={handleCloseButtonClick}
+          onUpdateUser={handleAddPlaceSubmit}
+        />
+        <ImagePopup
+          onOpen={isImagePopupOpen}
+          onClose={handleCloseButtonClick}
+          item={activeCard}
+        />
+        <InfoToolTip
+          onClose={handleCloseButtonClick}
+          isOpen={isInfoToolTipOpen}
+          icon={infoToolTipIcon}
+          text={infoToolTipText}
+        />
+      </CurrentUserContext.Provider>
+    </div>
   );
 }
 export default App;
