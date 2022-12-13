@@ -5,4 +5,3 @@ one page react app thet get info from external
 One page app that take data from API
 data can be added managed and removed
 
-## Link to the page
