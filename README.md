@@ -1,5 +1,5 @@
 # Around react
-This project is about studien work with react and rest Api
+one page react app thet get info from external
 
 ## description
 One page app that take data from API
